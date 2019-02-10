@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'food_court/main.css' %}">
+    <meta charset="UTF-8">
+    <title>FoodCourt</title>
+</head>
+<body>
+<div style="text-align: center;">
+    <h1>You selected:</h1>
+</div>
+
+<table style="width:100%">
+    <tr>
+        <th>Ingredient</th>
+        <th>Count</th>
+        <th>Price</th>
+        <th>Price for ingredient</th>
+    </tr>
+    {% for row in table %}
+        <tr>
+            <th>{{ row.0 }}</th>
+            <th>{{ row.1 }}</th>
+            <th>{{ row.2 }}</th>
+            <th>{{ row.3 }}</th>
+        </tr>
+    {% endfor %}
+</table>
+
+TOTAL FOR ALL: {{ total }}
+
+<form action="{% url 'approved' %}" method="post">
+    {% csrf_token %}
+    <label>
+        <input type="text" name="email">
+    </label><br>
+    <label>
+        <input type="text" name="phone">
+    </label><br>
+    <label>
+        <input type="text" name="name">
+    </label><br>
+    <input type="hidden" name="total" value="{{ total }}"><br>
+
+    <input type="button" onclick="history.back();" value="Back">
+    <input type="submit" value="APPROVE">
+</form>
+
+</body>
+</html>

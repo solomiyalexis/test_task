@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FoodCourt</title>
+</head>
+<body>
+<div style="text-align: center;">
+    <h1>{{ message }}</h1>
+    <h1>Pizza</h1>
+</div>
+
+<form action="{% url 'view_order' %}" method="post">
+    {% csrf_token %}
+
+    <h2>Dough</h2>
+    {% for item in pizza_bases %}
+        <label>
+            <input type="radio" name="pizza_base" value="{{ item.id }}">
+        </label>{{ item.base_name }}
+    {% endfor %}
+    <h2>Stuffing Categories</h2>
+    {% for row in ingredient_data %}
+        <p>{{ row.0.name }}</p>
+        <div>
+            {% for ingredient in row.1 %}
+                <div>
+                    <label for="{{ ingredient.id }}"> {{ ingredient.name }} -> {{ ingredient.price }}</label>
+                    <input type="number" min="0" max="100" value="0" name="{{ ingredient.name }}"
+                           id="{{ ingredient.id }}">
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    <br>
+    <input type="submit" value="Calculate">
+</form>
+
+
+</body>
+</html>
