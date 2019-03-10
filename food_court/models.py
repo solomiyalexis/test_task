@@ -23,3 +23,13 @@ class Ingredients(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Pizza(models.Model):
+    pizza_name = models.CharField(max_length=100)
+    description = models.TextField(('description'), blank=True)
+    pizza_base = models.ForeignKey(PizzaBase, on_delete=models.PROTECT)
+    ingredients = models.ManyToManyField(Ingredients)
+
+    def __str__(self):
+        return self.pizza_name
