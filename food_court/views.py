@@ -5,7 +5,7 @@ from sendgrid import Email
 from sendgrid import sendgrid
 from sendgrid.helpers.mail import Content, Mail
 
-from .models import Ingredients, PizzaBase, IngredientsCategory
+from .models import Ingredients, PizzaBase, IngredientsCategory, Pizza
 
 
 class HomeView(TemplateView):
@@ -15,6 +15,7 @@ class HomeView(TemplateView):
         message = self.request.session.pop('message', '')
 
         context = super().get_context_data(*args, **kwargs)
+        context['pizza'] = Pizza.objects.all()
         context['pizza_bases'] = PizzaBase.objects.all()
         context["ingredient_data"] = HomeView.collect_configuration_info()
         context["message"] = message
@@ -32,11 +33,17 @@ class HomeView(TemplateView):
 
 class ViewOrder(View):
     def post(self, request, *args, **kwargs):
+        table = []
+        total = 0
+        for pizza in Pizza.objects.all():
+            count = request.POST.get(pizza.pizza_name, None)
+            if count:
+                pizza_price = pizza.calculate_price
+                item_price = int(count) * pizza_price
+                table.append((pizza.pizza_name, int(count), pizza_price, item_price))
+
         pizza_base_id = request.POST.get('pizza_base')
         pizza_base = PizzaBase.objects.get(pk=int(pizza_base_id))
-
-        table = []
-        total = pizza_base.price
 
         table.append((pizza_base.base_name, 1, pizza_base.price, pizza_base.price))
 
@@ -44,10 +51,12 @@ class ViewOrder(View):
             count = request.POST.get(ingredient.name, None)
             if count:
                 item_price = int(count) * ingredient.price
-                total += item_price
                 table.append((ingredient.name, int(count), ingredient.price, item_price))
 
-        context = {'pizza_base': pizza_base, 'table': table, 'total': total}
+        for item in table:
+            total += item[-1]
+
+        context = {'table': table, 'total': total}
         return render(request, 'view_order.html', context)
 
 

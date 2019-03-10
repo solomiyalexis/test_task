@@ -13,6 +13,15 @@
 <form action="{% url 'view_order' %}" method="post">
     {% csrf_token %}
 
+
+    <h2>Pizza</h2>
+    {% for item in pizza %}
+        <div>
+            <label for="{{ item.id }}"> {{ item.pizza_name }} -> {{ item.calculate_price }}</label>
+            <input type="number" min="0" max="100" value="0" name="{{ item.pizza_name }}"
+                   id="{{ item.id }}">
+        </div>
+    {% endfor %}
     <h2>Dough</h2>
     {% for item in pizza_bases %}
         <label>

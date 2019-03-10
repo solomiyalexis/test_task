@@ -33,3 +33,13 @@ class Pizza(models.Model):
 
     def __str__(self):
         return self.pizza_name
+
+    @property
+    def calculate_price(self):
+        total = 0
+        total += self.pizza_base.price
+        for ingredient in self.ingredients.all():
+            total += ingredient.price
+        return total
+
+
